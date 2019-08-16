@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.dao.BefordfindDao">
+    <resultMap id="subjectMap" type="com.qfedu.entity.Subject">
+        <id column="id" property="id"></id>
+        <result property="subjectName" column="subject_name"></result>
+        <collection property="courseList" ofType="com.qfedu.entity.Course" javaType="list">
+            <id column="cid" property="id"></id>
+            <result property="courseTitle" column="course_title"></result>
+            <result property="courseDesc" column="course_desc"></result>
+            <result property="subjectId" column="subject_id"></result>
+            <collection property="videoList" ofType="com.qfedu.entity.Video" javaType="list">
+                <id property="id" column="vid"></id>
+                <result property="title" column="title"></result>
+                <result property="detail" column="detail"></result>
+                <result property="time" column="time"></result>
+                <result property="speakerId" column="speaker_id"></result>
+                <result property="courseId" column="course_id"></result>
+                <result property="videoUrl" column="video_id"></result>
+                <result property="imageUrl" column="image_url"></result>
+                <result property="playNum" column="play_num"></result>
+            </collection>
+        </collection>
+   </resultMap>
+
+
+    <select id="BefordFind" parameterType="int" resultMap="subjectMap">
+        select s.*,
+                c.id as cid,c.course_title,c.course_desc,
+                v.id as vid,v.title,v.detail,v.time,v.speaker_id,v.course_id,v.video_url,v.image_url,v.play_num
+        from subject s
+        inner join course c
+        on s.id = c.subject_id
+        inner join video v
+        on c.id = v.course_id
+        where s.id = #{id}
+    </select>
+</mapper>

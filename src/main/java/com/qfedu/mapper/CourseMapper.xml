@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.dao.CourseDao">
+    <select id="findAllCourse" parameterType="String" resultType="com.qfedu.entity.Course">
+        select * from course
+    </select>
+    <select id="findAll2" parameterType="int" resultType="com.qfedu.vo.CourseVO">
+        select c.*,s.subject_name from course c inner join subject s
+        <where>
+            c.subject_id = s.id
+            <if test="id != '' and id != null">
+                and c.id = #{id}
+            </if>
+
+        </where>
+    </select>
+
+    <delete id="deleteCourse" parameterType="int">
+        delete from course where id = #{id}
+    </delete>
+
+    <insert id="addCourse" parameterType="com.qfedu.entity.Course">
+        insert into course values (0,#{courseTitle},#{courseDesc},#{subjectId});
+    </insert>
+    <select id="findOne" parameterType="int" resultType="com.qfedu.entity.Course">
+        select * from course where id= #{id}
+    </select>
+
+    <update id="updateCourse" parameterType="com.qfedu.entity.Course">
+        update course set course_title=#{courseTitle},course_desc = #{courseTitle},
+        subject_id = #{subjectId}
+        where id= #{id}
+    </update>
+
+    <resultMap id="subjectMap" type="com.qfedu.entity.Subject">
+        <id column="id" property="id"></id>
+        <result property="subjectName" column="subject_name"></result>
+        <collection property="courseList" ofType="com.qfedu.entity.Course" javaType="list">
+            <id column="cid" property="id"></id>
+            <result property="courseTitle" column="course_title"></result>
+            <result property="courseDesc" column="course_desc"></result>
+            <result property="subjectId" column="subject_id"></result>
+            <collection property="videoList" ofType="com.qfedu.entity.Video" javaType="list">
+                <id property="id" column="vid"></id>
+                <result property="title" column="title"></result>
+                <result property="detail" column="detail"></result>
+                <result property="time" column="time"></result>
+                <result property="speakerId" column="speaker_id"></result>
+                <result property="courseId" column="course_id"></result>
+                <result property="videoUrl" column="video_id"></result>
+                <result property="imageUrl" column="image_url"></result>
+                <result property="playNum" column="play_num"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="queryOneBySubject" parameterType="int" resultMap="subjectMap">
+
+        select s.*,
+                c.id as cid,c.course_title,c.course_desc,
+                v.id as vid,v.title,v.detail,v.time,v.speaker_id,v.course_id,v.video_url,v.image_url,v.play_num
+        from subject s
+        inner join course c
+        on s.id = c.subject_id
+        inner join video v
+        on c.id = v.course_id
+        where s.id = #{id}
+    </select>
+
+    <resultMap id="courseMap" type="com.qfedu.entity.Course">
+        <id property="id" column="id"></id>
+        <result property="courseTitle" column="course_title"></result>
+        <result property="courseDesc" column="course_desc"></result>
+        <result property="subjectId" column="subject_id"></result>
+        <collection property="videoList" ofType="com.qfedu.vo.VideoVV" javaType="list">
+            <id property="id" column="vid"></id>
+            <result property="title" column="title"></result>
+            <result property="detail" column="detail"></result>
+            <result property="time" column="time"></result>
+            <result property="showTime" column="time"></result>
+            <result property="courseId" column="course_id"></result>
+            <result property="videoUrl" column="video_url"></result>
+            <result property="imageUrl" column="image_url"></result>
+            <result property="playNum" column="play_num"></result>
+            <result property="showTime" column="time"></result>
+            <result property="speakerName" column="speaker_name"></result>
+            <association property="speaker" javaType="com.qfedu.entity.Speaker">
+                <id property="id" column="sid"></id>
+                <result property="speakerName" column="speaker_name"></result>
+                <result property="speakerDesc" column="speaker_desc"></result>
+                <result property="speakerJob" column="speaker_job"></result>
+                <result property="headImgUrl" column="head_img_url"></result>
+            </association>
+
+        </collection>
+    </resultMap>
+
+    <select id="findCourseAndVideo" parameterType="int" resultMap="courseMap" >
+        select c.*,
+               v.id as vid, v.title, v.detail, v.time, v.speaker_id, v.course_id, v.video_url, v.image_url, v.play_num,
+               s.id as sid, s.speaker_name, s.speaker_desc, s.speaker_job, s.head_img_url
+        from course c
+        inner join video v
+        on c.id = v.course_id
+        inner join speaker s
+        on v.speaker_id = s.id
+        where c.id = #{id}
+    </select>
+</mapper>

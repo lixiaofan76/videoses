@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.dao.SpeakerDao">
+    <select id="findAllSpeaker" parameterType="int" resultType="com.qfedu.entity.Speaker">
+        select * from speaker
+        <where>
+            <if test="id != '' and id != null">
+                and id = #{id}
+            </if>
+
+        </where>
+    </select>
+    <select id="findAllSpeaker2" parameterType="String" resultType="com.qfedu.entity.Speaker">
+        select * from speaker
+    </select>
+
+    <insert id="addSpeaker" parameterType="com.qfedu.entity.Speaker">
+        insert into speaker values (0,#{speakerName},#{speakerDesc},#{speakerJob},#{headImgUrl})
+    </insert>
+
+    <delete id="deleteSpeaker" parameterType="int">
+        delete from speaker where id= #{id}
+    </delete>
+
+    <select id="findOne" parameterType="int" resultType="com.qfedu.entity.Speaker">
+        select * from speaker where id = #{id};
+    </select>
+
+    <update id="updateInfo" parameterType="com.qfedu.entity.Speaker">
+        update speaker set speaker_name = #{speakerName},speaker_desc = #{speakerDesc},
+        speaker_job=#{speakerJob},head_img_url = #{headImgUrl}
+        where id = #{id}
+    </update>
+</mapper>

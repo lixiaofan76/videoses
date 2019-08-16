@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.dao.VideoDao">
+    <select id="findAllVideo"  resultType="com.qfedu.vo.ViedoVO">
+
+        select * from video v inner join speaker s
+        <where>
+            v.speaker_id = s.id
+            <if test="title != '' and title != null">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="speakerId != '' and speakerId != null">
+                and speaker_id = #{speakerId}
+            </if>
+            <if test="courseId != '' and courseId != null">
+                and course_id = #{courseId}
+            </if>
+        </where>
+
+    </select>
+    <delete id="deleteById" parameterType="int">
+        delete from video where id = #{id}
+    </delete>
+
+    <insert id="addVideo" parameterType="com.qfedu.entity.Video">
+        insert into video values (0,#{title},#{detail},#{time},#{speakerId},#{courseId},#{videoUrl},#{imageUrl},0)
+    </insert>
+
+    <select id="findOneById" parameterType="int" resultType="com.qfedu.vo.VideoVV">
+        select v.*,s.speaker_name from video v
+        inner join speaker s
+        on v.speaker_id = s.id
+        where v.id= #{id};
+    </select>
+
+    <select id="findOneById2" parameterType="int" resultType="com.qfedu.entity.Video">
+        select v.*,s.speaker_name from video v
+        inner join speaker s
+        on v.speaker_id = s.id
+        where v.id= #{id};
+    </select>
+
+    <update id="updateInfo" parameterType="com.qfedu.entity.Video">
+        update video set title=#{title},detail=#{detail},time=#{time},speaker_id=#{speakerId},video_url=#{videoUrl},image_url=#{imageUrl}
+        where id = #{id}
+    </update>
+
+    <resultMap id="videoMap" type="video">
+        <id property="id" column="id"></id>
+        <result property="title" column="title"></result>
+        <result property="detail" column="detail"></result>
+        <result property="time" column="time"></result>
+        <result property="courseId" column="course_id"></result>
+        <result property="speakerId" column="speaker_id"></result>
+        <result property="videoUrl" column="video_url"></result>
+        <result property="imageUrl" column="image_url"></result>
+        <result property="playNum" column="play_num"></result>
+        <association property="speaker" javaType="com.qfedu.entity.Speaker">
+            <id property="id" column="sid"></id>
+            <result property="speakerName" column="speaker_name"></result>
+            <result property="speakerDesc" column="speaker_desc"></result>
+            <result property="speakerJob" column="speaker_job"></result>
+            <result property="headImgUrl" column="head_img_url"></result>
+        </association>
+    </resultMap>
+
+    <select id="findVideoAndSpeaker" parameterType="int" resultMap="videoMap">
+        select v.*,
+               s.id as sid, s.speaker_name, s.speaker_desc, s.speaker_job, s.head_img_url
+        from video v
+        inner join speaker s
+        on v.speaker_id = s.id
+        where v.id = #{id}
+    </select>
+
+    <update id="updatePlayNum" parameterType="map">
+        update video
+        set play_num = #{playNum}
+        where id = #{videoId}
+    </update>
+</mapper>
